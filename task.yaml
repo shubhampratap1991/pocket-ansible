@@ -1,0 +1,29 @@
+---
+- name: Provision server and install Nginx
+  hosts: web
+  become: true
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Create HTML directory
+      file:
+        path: /var/www/html
+        state: directory
+        mode: 0755
+
+    - name: Create index.html
+      copy:
+        content: "<html><body><h1>Welcome to my website</h1></body></html>"
+        dest: /var/www/html/index.html
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
