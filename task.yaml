@@ -31,7 +31,7 @@
 
     - name: Create yellow index.html
       copy:
-        content: "<html><body><h1>Welcome to the Yellow!</h1></body></html>"
+        content: "<html><body><h1>This is the yellow page. It's distinct from the home page</h1></body></html>"
         dest: /var/www/html/yellow/index.html
 
     - name: Copy nginx.conf template
