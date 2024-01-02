@@ -1,43 +1,48 @@
-name: Ansible Docker Swarm
+---
+- name: Provision server and install Nginx
+  hosts: web
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
 
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run ansible-lint
-        uses: ansible-community/ansible-lint-action@v6.0.2
-        with:
-          args: "ansible" # my ansible files in a folder
+    - name: Create HTML directory
+      file:
+        path: /var/www/html
+        state: directory
+        mode: 0755
 
-  run-playbook:
-    runs-on: ubuntu-latest
-    needs: [ validate ]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - name: Install dependencies Including Ansible
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          name: id_rsa # optional
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-          if_key_exists: fail # replace / ignore / fail; optional
-      - name: Run playbook
-        run: |
-          ansible-playbook -i inventory.ini task.yaml 
+    - name: Create index.html
+      copy:
+        content: "<html><body><h1>Welcome to my Nginx server! My name is Shubham.</h1></body></html>"
+        dest: /var/www/html/index.html
+
+    - name: Create yellow directory
+      file:
+        path: /var/www/html/yellow
+        state: directory
+        mode: 0755
+
+    - name: Create yellow index.html
+      copy:
+        content: "<html><body><h1>Welcome to the Yellow!</h1></body></html>"
+        dest: /var/www/html/yellow/index.html
+
+    - name: Copy nginx.conf template
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify:
+        - Restart Nginx
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
