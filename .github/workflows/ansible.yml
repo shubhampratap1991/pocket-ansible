@@ -3,11 +3,7 @@ name: deploy ansible
 on:
   push:
     branches:
-    - master
-  pull_request:
-    branches:
-    - master
-
+    - main
 jobs:
   build:
     runs-on: ubuntu-latest
