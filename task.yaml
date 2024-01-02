@@ -23,6 +23,25 @@
         content: "<html><body><h1>Welcome to my Nginx server! My name is Shubham.</h1></body></html>"
         dest: /var/www/html/index.html
 
+    - name: Create yellow directory
+      file:
+        path: /var/www/html/yellow
+        state: directory
+        mode: 0755
+
+    - name: Create yellow index.html
+      copy:
+        content: "<html><body><h1>Welcome to the Yellow!</h1></body></html>"
+        dest: /var/www/html/yellow/index.html
+
+    - name: Copy nginx.conf template
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify:
+        - Restart Nginx
+
+  handlers:
     - name: Restart Nginx
       service:
         name: nginx
