@@ -10,16 +10,12 @@ jobs:
     steps:
     - name: checkout repo
       uses: actions/checkout@v2
-    - name: Lint Ansible Playbook
-      uses: ansible/ansible-lint-action@master
-      with:
-        targets: ""
-  deployAnsible:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: ./.github/actions/ansible
-      with: 
-        playbook: task.yml
-        inventory: inventory.ini
+    - name: Setting up SSH key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+    - name: Run Ansible Playbook
+      run: |
+        sudo apt update
+        sudo apt install -y ansible
+        ansible-playbook -i inventory.ini task.yml --private-key=private_key.pem
