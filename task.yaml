@@ -20,7 +20,7 @@
 
     - name: Create index.html
       copy:
-        content: "<html><body><h1>Welcome to my website</h1></body></html>"
+        content: "<html><body><h1>Welcome to my Nginx server! My name is Shubham.</h1></body></html>"
         dest: /var/www/html/index.html
 
     - name: Restart Nginx
