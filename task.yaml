@@ -1,7 +1,7 @@
 ---
 - name: Provision server and install Nginx
-  hosts: all
-  become: true
+  hosts: web
+  become: yes
   tasks:
     - name: Update apt cache
       apt:
