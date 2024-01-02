@@ -36,7 +36,7 @@
 
     - name: Copy nginx.conf template
       template:
-        src: nginx.conf.j2
+        src: nginx.conf
         dest: /etc/nginx/nginx.conf
       notify:
         - Restart Nginx
